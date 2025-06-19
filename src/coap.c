@@ -75,17 +75,14 @@ coap_option coap_get_option(coap_pdu *pdu, coap_option *last)
 	coap_option option;
 	coap_error err;
 
-	if (last != NULL && last->num != 0){
-		option.num = last->num;
-		option.len = 0;
-		option.val = NULL;
+	option.len = 0;
+	option.val = NULL;
 
+	if (last && last->val) {
+		option.num = (last->num != 0) ? last->num : 0;
 		opt_ptr = last->val + last->len;
 	} else {
 		option.num = 0;
-		option.len = 0;
-		option.val = NULL;
-
 		opt_ptr = pdu->buf + 4 + coap_get_tkl(pdu);
 	}
 
