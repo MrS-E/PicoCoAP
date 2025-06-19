@@ -91,7 +91,7 @@ coap_option coap_get_option(coap_pdu *pdu, coap_option *last)
 
 	// If opt_ptr is outside pkt range, put it at first opt.
 	if (opt_ptr > (pdu->buf + pdu->len) || opt_ptr <= pdu->buf){
-		opt_ptr = pdu->buf + 4 + coap_get_tkl(pdu);
+		goto return_option;
 	}
 
 	err = coap_decode_option(opt_ptr, pdu->len-(opt_ptr-pdu->buf), &option.num, &option.len, &option.val);
@@ -112,8 +112,7 @@ coap_option coap_get_option(coap_pdu *pdu, coap_option *last)
 		option.num = 0;
 	}
 
-	opt_ptr = option.val + option.len;
-
+	return_option:
 	return option;
 }
 
@@ -147,11 +146,13 @@ coap_option coap_get_option_by_num(coap_pdu *pdu, coap_option_number num, uint8_
 //
 // Decoding Functions (Intended for Internal Use)
 //
+#define ENSURE_BYTES(ptr, end_ptr, count) if ((ptr) + (count) > (end_ptr)) return CE_INVALID_PACKET;
 
 coap_error coap_decode_option(uint8_t *pkt_ptr, size_t pkt_len,
 	                           uint16_t *option_number, size_t *option_length, uint8_t **value)
 {
 	uint8_t *ptr = pkt_ptr;
+	uint8_t* end_ptr = pkt_ptr + pkt_len;
 	uint16_t delta, length;
 
 	// Check for end of Packet
@@ -167,15 +168,18 @@ coap_error coap_decode_option(uint8_t *pkt_ptr, size_t pkt_len,
 	// Get Base Delta and Length
 	delta = *ptr >> 4;
 	length = *ptr & 0x0F;
+	ENSURE_BYTES(ptr, end_ptr, 1);
 	ptr++;
 
 	// Check for and Get Extended Delta
 	if (delta < 13) {
 		//delta = delta;
 	}else if (delta == 13) {
+		ENSURE_BYTES(ptr, end_ptr, 1);
 		delta = *ptr + 13;
 		ptr += 1;
 	}else if (delta == 14) {
+		ENSURE_BYTES(ptr, end_ptr, 2);
 		delta = (*ptr << 8) + *(ptr+1) + 269;
 		ptr += 2;
 	}else{
@@ -186,14 +190,18 @@ coap_error coap_decode_option(uint8_t *pkt_ptr, size_t pkt_len,
 	if (length < 13) {
 		//length = length;
 	}else if (length == 13) {
+		ENSURE_BYTES(ptr, end_ptr, 1);
 		length = *ptr + 13;
 		ptr += 1;
 	}else if (length == 14) {
+		ENSURE_BYTES(ptr, end_ptr, 2);
 		length = (*ptr << 8) + *(ptr+1) + 269;
 		ptr += 2;
 	}else{
 		return CE_INVALID_PACKET;
 	}
+
+	ENSURE_BYTES(ptr, end_ptr, length);
 
 	if (option_number != NULL)
 		*option_number += delta;
