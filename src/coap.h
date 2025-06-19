@@ -128,7 +128,7 @@ typedef enum coap_option_number {
 	CON_URI_PORT = 7,
 	CON_LOCATION_PATH = 8,
 	CON_URI_PATH = 11,
-	CON_CONTENT_FORMATt = 12,
+	CON_CONTENT_FORMAT = 12,
 	CON_MAX_AGE = 14,
 	CON_URI_QUERY = 15,
 	CON_ACCEPT = 17,
