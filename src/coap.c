@@ -449,7 +449,8 @@ coap_error coap_set_payload(coap_pdu *pdu, uint8_t *payload, size_t payload_len)
 	}else if (err == CE_FOUND_PAYLOAD_MARKER){
 		// Check that we were given enough buffer.
 		if (pdu->max < pdu->len + payload_len)
-			return CE_INSUFFICIENT_BUFFER;	
+			return CE_INSUFFICIENT_BUFFER;
+		pkt_ptr++;
 	}
 
 	pdu->len = (pkt_ptr - pdu->buf) + payload_len;
