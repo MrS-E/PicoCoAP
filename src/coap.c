@@ -3,6 +3,8 @@
 #include <string.h>
 #include "coap.h"
 
+#include <stdio.h>
+
 
 //
 // Getters
@@ -120,6 +122,7 @@ coap_option coap_get_option_by_num(coap_pdu *pdu, coap_option_number num, uint8_
 	uint8_t i = 0;
 
 	option.num = 0;
+	option.val = NULL;
 
 	do {
 		option = coap_get_option(pdu, &option);
@@ -131,7 +134,7 @@ coap_option coap_get_option_by_num(coap_pdu *pdu, coap_option_number num, uint8_
 			option.len = 0;
 			option.val = NULL;
 			break;
-		} else if (option.num == 0) {
+		} else if (option.val == NULL) {
 			break;
 		}
 	} while (i <= occ);
