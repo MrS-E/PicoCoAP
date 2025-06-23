@@ -361,6 +361,7 @@ coap_error coap_set_token(coap_pdu *pdu, uint64_t token, uint8_t tkl)
 
 coap_error coap_add_option(coap_pdu *pdu, int32_t opt_num, uint8_t* value, uint16_t opt_len)
 {
+	if (pdu->len < 4) return CE_PACKET_NOT_INITIALIZED;
 	uint8_t *pkt_ptr, *fopt_val, nopt_hdr_len;
 	uint16_t fopt_num, lopt_num;
 	size_t fopt_len, opts_len;
@@ -422,6 +423,7 @@ coap_error coap_add_option(coap_pdu *pdu, int32_t opt_num, uint8_t* value, uint1
 }
 
 coap_error coap_set_payload(coap_pdu *pdu, uint8_t *payload, size_t payload_len){
+	if (pdu->len < 4) return CE_PACKET_NOT_INITIALIZED;
 	uint8_t *pkt_ptr, *fopt_val;
 	uint16_t fopt_num;
 	size_t fopt_len;
