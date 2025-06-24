@@ -468,7 +468,7 @@ coap_error coap_set_payload(coap_pdu *pdu, uint8_t *payload, size_t payload_len)
 coap_error coap_adjust_option_deltas(uint8_t *opts_start, size_t *opts_len, size_t max_len, int32_t offset)
 {
 	uint8_t *ptr, *fopt_val;
-	uint16_t fopt_num, nopt_num;
+	uint16_t fopt_num, nopt_num, lopt_num;
 	size_t fopt_len;
 	int8_t nhdr_len, fhdr_len;
 	coap_error err;
@@ -476,6 +476,7 @@ coap_error coap_adjust_option_deltas(uint8_t *opts_start, size_t *opts_len, size
 	fopt_val = opts_start;
 	fopt_len = 0;
 	fopt_num = 0;
+	lopt_num = 0;
 
 	do{
 		ptr = fopt_val + fopt_len;
@@ -490,7 +491,12 @@ coap_error coap_adjust_option_deltas(uint8_t *opts_start, size_t *opts_len, size
 			return err;
 
 		// New Option Number
-		nopt_num = fopt_num + offset;
+		if (offset < 0) {
+			nopt_num = fopt_num + offset;
+		} else {
+			nopt_num = fopt_num - lopt_num;
+			lopt_num = fopt_num;
+		}
 
 		// Find the length of the found header.
 		fhdr_len = fopt_val - ptr;
