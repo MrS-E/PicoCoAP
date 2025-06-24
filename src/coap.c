@@ -331,6 +331,7 @@ coap_error coap_set_mid(coap_pdu *pdu, uint16_t mid)
 
 coap_error coap_set_token(coap_pdu *pdu, uint64_t token, uint8_t tkl)
 {
+	if (pdu->len < 4) return CE_PACKET_NOT_INITIALIZED;
 	// Check that we were given enough buffer.
 	if (pdu->max < 4 + tkl)
 		return CE_INSUFFICIENT_BUFFER;
