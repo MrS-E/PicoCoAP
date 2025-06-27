@@ -360,7 +360,7 @@ coap_error coap_set_token(coap_pdu *pdu, uint64_t token, uint8_t tkl)
 	return CE_NONE;
 }
 
-coap_error coap_add_option(coap_pdu *pdu, int32_t opt_num, uint8_t* value, uint16_t opt_len)
+coap_error coap_add_option(coap_pdu *pdu, uint16_t opt_num, uint8_t* value, uint16_t opt_len)
 {
 	if (pdu->len < 4) return CE_PACKET_NOT_INITIALIZED;
 	uint8_t *pkt_ptr, *fopt_val, nopt_hdr_len;
