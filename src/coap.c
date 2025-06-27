@@ -400,15 +400,13 @@ coap_error coap_add_option(coap_pdu *pdu, int32_t opt_num, uint8_t* value, uint1
 		pdu->len += nopt_hdr_len + opt_len;
 
 		// Find Current Length of Remaining Options
-		opts_len = pdu->len - (pkt_ptr-pdu->buf);
+		uint8_t *opts_mov_ptr = pkt_ptr + nopt_hdr_len + opt_len;
+		opts_len = pdu->len - (opts_mov_ptr-pdu->buf);
 
 		// Adjust the option deltas for the rest of the options.
-		coap_adjust_option_deltas(pkt_ptr + nopt_hdr_len + opt_len, 
+		coap_adjust_option_deltas(opts_mov_ptr,
 		                          &opts_len, pdu->max - (pkt_ptr - pdu->buf),
 		                          lopt_num - opt_num);
-
-		// Update Total Packet Length
-		pdu->len += opts_len - (pdu->len - (pkt_ptr-pdu->buf));
 	}else{
 		// Update Packet Length
 		pdu->len = pdu->len + nopt_hdr_len + opt_len;
